@@ -63,5 +63,4 @@ class DfuFile:
             del(self.devInfo['crc'])
 
 
-DfuFile('../spiflash.dfu')
 
