@@ -118,7 +118,25 @@ if __name__=="__main__":
         except ValueError:
           print "Address %s invalid." % address
           sys.exit(1)
-        target.append({ 'address': address, 'data': data })
+        # The file may contain multiple sections with empty addresses in between
+        # which can be supported by the file so leave them out.
+        addrStart = None
+        addLast = None
+        for addr in ih.addresses():
+            ih[addr] = addr & 0xFF
+            if addrStart == None:
+                addrStart = addr
+            elif addr != (addrLast + 1):
+                # Block end!
+                data = ih.tobinstr(start=addrStart, end=addrLast)
+                target.append({ 'address': addrStart, 'data': data })
+                addrStart = addr
+            addrLast = addr
+        else:
+            data = ih.tobinstr(start=addrStart, end=addrLast)
+            target.append({ 'address': addrStart, 'data': data })
+            
+            
     
     outfile = args[0]
     device = DEFAULT_DEVICE
