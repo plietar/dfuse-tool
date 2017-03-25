@@ -1,5 +1,6 @@
 import usb.util
 import time
+import errno
 
 DFU_REQUEST_SEND = 0x21
 DFU_REQUEST_RECEIVE = 0xa1
@@ -48,8 +49,21 @@ class DfuDevice:
         return self.control_msg(DFU_REQUEST_RECEIVE, DFU_UPLOAD, blockNum, size)
 
     def get_status(self):
-        status = self.control_msg(DFU_REQUEST_RECEIVE, DFU_GETSTATUS, 0, 6)
-        return (status[0], status[4], status[1] + (status[2] << 8) + (status[3] << 16), status[5])
+        # An arbitrary number of retries.
+        for i in range(5):
+            try:
+                status = self.control_msg(DFU_REQUEST_RECEIVE, DFU_GETSTATUS, 0, 6)
+                return (status[0], status[4], status[1] + (status[2] << 8) + (status[3] << 16), status[5])
+            except usb.core.USBError as ex:
+                if ex.errno == errno.EPIPE:
+                    # Stalled; wait for it to clear.
+                    time.sleep(.01 * i)
+                else:
+                    raise
+        else:
+            # One last time to either succeed or raise the exception
+            status = self.control_msg(DFU_REQUEST_RECEIVE, DFU_GETSTATUS, 0, 6)
+            return (status[0], status[4], status[1] + (status[2] << 8) + (status[3] << 16), status[5])
     
     def clear_status(self):
         self.control_msg(DFU_REQUEST_SEND, DFU_CLRSTATUS, 0, None)
