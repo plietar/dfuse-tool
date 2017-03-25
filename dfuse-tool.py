@@ -84,14 +84,14 @@ def flash(args):
             dfu.erase(image['address'])
             status = dfu.wait_while_state(dfuse.DfuState.DFU_DOWNLOAD_BUSY)
             if status[1] != dfuse.DfuState.DFU_DOWNLOAD_IDLE:
-                raise RuntimeError("An error occured. Device Status: %r" % status)
+                raise RuntimeError("An error occured. Device Status: %r" % (status))
 
             print("Flashing ...")
             transfer_size = 1024
             dfu.set_address(image['address'])
             status = dfu.wait_while_state(dfuse.DfuState.DFU_DOWNLOAD_BUSY)
             if status[1] != dfuse.DfuState.DFU_DOWNLOAD_IDLE:
-                raise RuntimeError("An error occured. Device Status: %r" % status)
+                raise RuntimeError("An error occured. Device Status: %r" % (status))
             
             data = image['data']
             blocks = [data[i:i + transfer_size] for i in range(0, len(data), transfer_size)]
@@ -100,7 +100,7 @@ def flash(args):
                 dfu.write(blocknum, block)
                 status = dfu.wait_while_state(dfuse.DfuState.DFU_DOWNLOAD_BUSY)
                 if status[1] != dfuse.DfuState.DFU_DOWNLOAD_IDLE:
-                    raise RuntimeError("An error occured. Device Status: %r" % status)
+                    raise RuntimeError("An error occured. Device Status: %r" % (status))
 
             print("Done")
 
