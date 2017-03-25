@@ -84,14 +84,14 @@ def flash(args):
             dfu.erase(image['address'])
             status = dfu.wait_while_state(dfuse.DfuState.DFU_DOWNLOAD_BUSY)
             if status[1] != dfuse.DfuState.DFU_DOWNLOAD_IDLE:
-                raise RuntimeError("An error occured. Device Status: %r" % status)
+                raise RuntimeError("An error occured. Device Status: %r" % (status))
 
             print("Flashing ...")
-            transfer_size = 1024
+            transfer_size = args.size
             dfu.set_address(image['address'])
             status = dfu.wait_while_state(dfuse.DfuState.DFU_DOWNLOAD_BUSY)
             if status[1] != dfuse.DfuState.DFU_DOWNLOAD_IDLE:
-                raise RuntimeError("An error occured. Device Status: %r" % status)
+                raise RuntimeError("An error occured. Device Status: %r" % (status))
             
             data = image['data']
             blocks = [data[i:i + transfer_size] for i in range(0, len(data), transfer_size)]
@@ -100,7 +100,7 @@ def flash(args):
                 dfu.write(blocknum, block)
                 status = dfu.wait_while_state(dfuse.DfuState.DFU_DOWNLOAD_BUSY)
                 if status[1] != dfuse.DfuState.DFU_DOWNLOAD_IDLE:
-                    raise RuntimeError("An error occured. Device Status: %r" % status)
+                    raise RuntimeError("An error occured. Device Status: %r" % (status))
 
             print("Done")
 
@@ -128,6 +128,7 @@ devinfo.add_argument('--pid', action='store', type=int, default=0xdf11, help='De
 devinfo.add_argument('--cfg', action='store', type=int, default=0, help='Device\'s configuration number, default to 0')
 devinfo.add_argument('--intf', action='store', type=int, default=0, help='Device\'s interface number, defaults to 0')
 devinfo.add_argument('--alt', action='store', type=int, default=0, help='Device\'s alternate setting number, defaults to 0')
+devinfo.add_argument('--size', action='store', type=int, default=1024, help='Transfer size, defaults to 1024')
 
 others = parser.add_argument_group('Other Options')
 others.add_argument('--force', '-f', action='store_true', help='Bypass sanity checks')
