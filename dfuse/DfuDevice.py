@@ -70,7 +70,7 @@ class DfuDevice:
         return self.dnload(0x0, []) # Just send an empty data.
 
     def get_string(self, index):
-        return usb.util.get_string(self.dev, 256, index)
+        return usb.util.get_string(self.dev, index)
 
     def wait_while_state(self, state):
         if not isinstance(state, (list, tuple)):
