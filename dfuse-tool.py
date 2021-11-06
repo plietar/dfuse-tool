@@ -73,7 +73,7 @@ def erase(args):
     cnt = 0
     while addr < end:
         dfu.erase(addr)
-        dfu.get_status() # must send after erase command page page 16 AN3156
+        # must send after erase command page page 16 AN3156
         dfu.wait_while_state(dfuse.DfuState.DFU_DOWNLOAD_BUSY)
         print("Erasing page starting at %.8x" % addr)
         addr += pagesize
