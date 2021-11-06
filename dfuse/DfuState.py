@@ -10,4 +10,9 @@ class DfuState():
     DFU_MANIFEST_WAIT_RESET = 0x08
     DFU_UPLOAD_IDLE         = 0x09
     DFU_ERROR               = 0x0a
-
+    @staticmethod
+    def string(nr):
+        for itm in dir(DfuState):
+            if nr == DfuState.__dict__[itm]:
+                return itm
+        return ""
